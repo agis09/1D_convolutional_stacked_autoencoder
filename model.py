@@ -38,8 +38,11 @@ class DeepAutoEncoder(object):
                                 W_regularizer=regularizers.l2(0.0005))(unpool2)  # 14
 
         unpool1 = UpSampling1D(2)(deconv1)  # 15
-        decoded = Convolution1D(3, 7, activation='sigmoid', border_mode='same', init='glorot_normal',
-                                W_regularizer=regularizers.l2(0.0005))(unpool1)  # 16
+
+        crop = Cropping1D(cropping=(0, 7))(unpool1)
+
+        decoded = Convolution1D(1, 7, activation='sigmoid', border_mode='same', init='glorot_normal',
+                                W_regularizer=regularizers.l2(0.0005))(crop)  # 16
 
         self.encoder = Model(input=input_img, output=encoded)
         self.autoencoder = Model(input=input_img, output=decoded)
@@ -181,8 +184,10 @@ class AutoEncoderStack04(object):
         decoded = Convolution1D(
             64, 3, activation='linear', border_mode='same')(unpool4)  # 4
 
+        crop = Cropping1D(cropping=(0, 1))(decoded)
+
         self.encoder = Model(input=input_img, output=encoded)
-        self.autoencoder = Model(input=input_img, output=decoded)
+        self.autoencoder = Model(input=input_img, output=crop)
         print(self.autoencoder.summary())
 
     def compile(self, optimizer='adam', loss='mean_squared_error'):
