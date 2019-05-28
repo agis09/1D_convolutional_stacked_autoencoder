@@ -1,1 +1,1 @@
-# deeplearning-stacked_autoencoder
+# 1d_convolutional_stacked_autoencoder
