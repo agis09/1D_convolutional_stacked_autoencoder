@@ -1,45 +1,45 @@
-from keras.layers import Input, MaxPooling2D, UpSampling2D, Convolution2D
+from keras.layers import Input, MaxPooling1D, UpSampling1D, Convolution1D
 from keras.models import Model
 from keras.optimizers import Adam
 from keras import regularizers
 
 
 class DeepAutoEncoder(object):
-    def __init__(self):
-        input_img = Input(shape=(80, 80, 3))  # 0
-        conv1 = Convolution2D(16, 7, 7, activation='relu', border_mode='same', init='glorot_normal',
+    def __init__(self, data):
+        input_img = Input(shape=(data.shape[1], data.shape[2]))  # 0
+        conv1 = Convolution1D(16, 7, activation='relu', border_mode='same', init='glorot_normal',
                               W_regularizer=regularizers.l2(0.0005))(input_img)  # 1
-        pool1 = MaxPooling2D((2, 2), border_mode='same')(conv1)  # 2
+        pool1 = MaxPooling1D(2, border_mode='same')(conv1)  # 2
 
-        conv2 = Convolution2D(32, 5, 5, activation='relu', border_mode='same', init='glorot_normal',
+        conv2 = Convolution1D(32, 5, activation='relu', border_mode='same', init='glorot_normal',
                               W_regularizer=regularizers.l2(0.0005))(pool1)  # 3
-        pool2 = MaxPooling2D((2, 2), border_mode='same')(conv2)  # 4
+        pool2 = MaxPooling1D(2, border_mode='same')(conv2)  # 4
 
-        conv3 = Convolution2D(64, 3, 3, activation='relu', border_mode='same', init='glorot_normal',
+        conv3 = Convolution1D(64, 3, activation='relu', border_mode='same', init='glorot_normal',
                               W_regularizer=regularizers.l2(0.0005))(pool2)  # 5
-        pool3 = MaxPooling2D((2, 2), border_mode='same')(conv3)  # 6
+        pool3 = MaxPooling1D(2, border_mode='same')(conv3)  # 6
 
-        conv4 = Convolution2D(128, 3, 3, activation='relu', border_mode='same', init='glorot_normal',
+        conv4 = Convolution1D(128, 3, activation='relu', border_mode='same', init='glorot_normal',
                               W_regularizer=regularizers.l2(0.0005))(pool3)  # 7
-        pool4 = MaxPooling2D((2, 2), border_mode='same')(conv4)  # 8
+        pool4 = MaxPooling1D(2, border_mode='same')(conv4)  # 8
 
         encoded = pool4
 
-        unpool4 = UpSampling2D((2, 2))(pool4)  # 9
-        deconv3 = Convolution2D(64, 3, 3, activation='relu', border_mode='same', init='glorot_normal',
-                              W_regularizer=regularizers.l2(0.0005))(unpool4)  # 10
+        unpool4 = UpSampling1D(2)(pool4)  # 9
+        deconv3 = Convolution1D(64, 3, activation='relu', border_mode='same', init='glorot_normal',
+                                W_regularizer=regularizers.l2(0.0005))(unpool4)  # 10
 
-        unpool3 = UpSampling2D((2, 2))(deconv3)  # 11
-        deconv2 = Convolution2D(32, 3, 3, activation='relu', border_mode='same', init='glorot_normal',
-                              W_regularizer=regularizers.l2(0.0005))(unpool3)  # 12
+        unpool3 = UpSampling1D(2)(deconv3)  # 11
+        deconv2 = Convolution1D(32, 3, activation='relu', border_mode='same', init='glorot_normal',
+                                W_regularizer=regularizers.l2(0.0005))(unpool3)  # 12
 
-        unpool2 = UpSampling2D((2, 2))(deconv2)  # 13
-        deconv1 = Convolution2D(16, 5, 5, activation='relu', border_mode='same', init='glorot_normal',
-                              W_regularizer=regularizers.l2(0.0005))(unpool2)  # 14
+        unpool2 = UpSampling1D(2)(deconv2)  # 13
+        deconv1 = Convolution1D(16, 5, activation='relu', border_mode='same', init='glorot_normal',
+                                W_regularizer=regularizers.l2(0.0005))(unpool2)  # 14
 
-        unpool1 = UpSampling2D((2, 2))(deconv1)  # 15
-        decoded = Convolution2D(3, 7, 7, activation='sigmoid', border_mode='same', init='glorot_normal',
-                              W_regularizer=regularizers.l2(0.0005))(unpool1)  # 16
+        unpool1 = UpSampling1D(2)(deconv1)  # 15
+        decoded = Convolution1D(3, 7, activation='sigmoid', border_mode='same', init='glorot_normal',
+                                W_regularizer=regularizers.l2(0.0005))(unpool1)  # 16
 
         self.encoder = Model(input=input_img, output=encoded)
         self.autoencoder = Model(input=input_img, output=decoded)
@@ -71,15 +71,17 @@ class DeepAutoEncoder(object):
 
 
 class AutoEncoderStack01(object):
-    def __init__(self):
-        input_img = Input(shape=(80, 80, 3))  # 0
-        conv1 = Convolution2D(16, 7, 7, activation='relu', border_mode='same')(input_img)  # 1
-        pool1 = MaxPooling2D((2, 2), border_mode='same')(conv1)  # 2
+    def __init__(self, data):
+        input_img = Input(shape=(data.shape[1], data.shape[2]))  # 0
+        conv1 = Convolution1D(16, 7, activation='relu',
+                              border_mode='same')(input_img)  # 1
+        pool1 = MaxPooling1D(2, border_mode='same')(conv1)  # 2
 
         encoded = pool1
 
-        unpool1 = UpSampling2D((2, 2))(pool1)  # 3
-        decoded = Convolution2D(3, 7, 7, activation='sigmoid', border_mode='same')(unpool1)  # 4
+        unpool1 = UpSampling1D(2)(pool1)  # 3
+        decoded = Convolution1D(
+            1, 7, activation='sigmoid', border_mode='same')(unpool1)  # 4
 
         self.encoder = Model(input=input_img, output=encoded)
         self.autoencoder = Model(input=input_img, output=decoded)
@@ -87,6 +89,7 @@ class AutoEncoderStack01(object):
     def compile(self, optimizer='adam', loss='binary_crossentropy'):
         adam = Adam(lr=0.001, decay=0.005)
         self.autoencoder.compile(optimizer=adam, loss=loss)
+        print(self.autoencoder.summary())
 
     def train(self, x_train=None, x_test=None, nb_epoch=1, batch_size=128, shuffle=True):
         self.autoencoder.fit(x_train, x_train,
@@ -100,15 +103,17 @@ class AutoEncoderStack01(object):
 
 
 class AutoEncoderStack02(object):
-    def __init__(self):
-        input_img = Input(shape=(40, 40, 16))  # 0
-        conv2 = Convolution2D(32, 5, 5, activation='relu', border_mode='same')(input_img)  # 1
-        pool2 = MaxPooling2D((2, 2), border_mode='same')(conv2)  # 2
+    def __init__(self, data):
+        input_img = Input(shape=(data.shape[1], data.shape[2]))  # 0
+        conv2 = Convolution1D(32, 5, activation='relu',
+                              border_mode='same')(input_img)  # 1
+        pool2 = MaxPooling1D(2, border_mode='same')(conv2)  # 2
 
         encoded = pool2
 
-        unpool2 = UpSampling2D((2, 2))(pool2)  # 3
-        decoded = Convolution2D(16, 5, 5, activation='linear', border_mode='same')(unpool2)  # 4
+        unpool2 = UpSampling1D(2)(pool2)  # 3
+        decoded = Convolution1D(
+            16, 5, activation='linear', border_mode='same')(unpool2)  # 4
 
         self.encoder = Model(input=input_img, output=encoded)
         self.autoencoder = Model(input=input_img, output=decoded)
@@ -129,15 +134,17 @@ class AutoEncoderStack02(object):
 
 
 class AutoEncoderStack03(object):
-    def __init__(self):
-        input_img = Input(shape=(20, 20, 32))  # 0
-        conv3 = Convolution2D(64, 3, 3, activation='relu', border_mode='same')(input_img)  # 1
-        pool3 = MaxPooling2D((2, 2), border_mode='same')(conv3)  # 2
+    def __init__(self, data):
+        input_img = Input(shape=(data.shape[1], data.shape[2]))  # 0
+        conv3 = Convolution1D(64, 3, activation='relu',
+                              border_mode='same')(input_img)  # 1
+        pool3 = MaxPooling1D(2, border_mode='same')(conv3)  # 2
 
         encoded = pool3
 
-        unpool3 = UpSampling2D((2, 2))(pool3)  # 4
-        decoded = Convolution2D(32, 3, 3, activation='linear', border_mode='same')(unpool3)  # 13
+        unpool3 = UpSampling1D(2)(pool3)  # 4
+        decoded = Convolution1D(
+            32, 3, activation='linear', border_mode='same')(unpool3)  # 13
 
         self.encoder = Model(input=input_img, output=encoded)
         self.autoencoder = Model(input=input_img, output=decoded)
@@ -158,15 +165,17 @@ class AutoEncoderStack03(object):
 
 
 class AutoEncoderStack04(object):
-    def __init__(self):
-        input_img = Input(shape=(10, 10, 64))  # 0
-        conv4 = Convolution2D(128, 3, 3, activation='relu', border_mode='same')(input_img)  # 1
-        pool4 = MaxPooling2D((2, 2), border_mode='same')(conv4)  # 2
+    def __init__(self, data):
+        input_img = Input(shape=(data.shape[1], data.shape[2]))  # 0
+        conv4 = Convolution1D(128, 3, activation='relu',
+                              border_mode='same')(input_img)  # 1
+        pool4 = MaxPooling1D(2, border_mode='same')(conv4)  # 2
 
         encoded = pool4
 
-        unpool4 = UpSampling2D((2, 2))(pool4)  # 3
-        decoded = Convolution2D(64, 3, 3, activation='linear', border_mode='same')(unpool4)  # 4
+        unpool4 = UpSampling1D(2)(pool4)  # 3
+        decoded = Convolution1D(
+            64, 3, activation='linear', border_mode='same')(unpool4)  # 4
 
         self.encoder = Model(input=input_img, output=encoded)
         self.autoencoder = Model(input=input_img, output=decoded)
