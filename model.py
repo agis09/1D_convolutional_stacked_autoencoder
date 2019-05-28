@@ -1,4 +1,4 @@
-from keras.layers import Input, MaxPooling1D, UpSampling1D, Convolution1D
+from keras.layers import Input, MaxPooling1D, UpSampling1D, Convolution1D, Cropping1D
 from keras.models import Model
 from keras.optimizers import Adam
 from keras import regularizers
@@ -83,9 +83,10 @@ class AutoEncoderStack01(object):
         unpool1 = UpSampling1D(2)(pool1)  # 3
         decoded = Convolution1D(
             1, 7, activation='sigmoid', border_mode='same')(unpool1)  # 4
+        crop = Cropping1D(cropping=(0, 1))(decoded)
 
         self.encoder = Model(input=input_img, output=encoded)
-        self.autoencoder = Model(input=input_img, output=decoded)
+        self.autoencoder = Model(input=input_img, output=crop)
 
     def compile(self, optimizer='adam', loss='binary_crossentropy'):
         adam = Adam(lr=0.001, decay=0.005)
@@ -183,6 +184,7 @@ class AutoEncoderStack04(object):
         self.encoder = Model(input=input_img, output=encoded)
         self.autoencoder = Model(input=input_img, output=decoded)
         print(self.autoencoder.summary())
+
     def compile(self, optimizer='adam', loss='mean_squared_error'):
         adam = Adam(lr=0.0005, decay=0.005)
         self.autoencoder.compile(optimizer=adam, loss=loss)

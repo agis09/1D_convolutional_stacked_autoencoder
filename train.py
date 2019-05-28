@@ -10,7 +10,7 @@ import pandas as pd
 def main():
     data_path = 'data.csv'
     df = pd.read_csv(data_path)
-    x_train1 = df.loc[:, "591":"1718"].values   # feature size is even number
+    x_train1 = df.loc[:, "591":"1719"].values
     x_train1 = np.reshape(x_train1, (x_train1.shape[0], x_train1.shape[1], 1))
     x_test1 = x_train1
     print(x_train1.shape)
