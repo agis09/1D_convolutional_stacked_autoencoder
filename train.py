@@ -41,8 +41,8 @@ def main():
     enc_train2 = ae02.encoder.predict(x=x_train2)
     enc_test2 = ae02.encoder.predict(x=x_test2)
 
-    np.save('train_stack02.npy', enc_train2)
-    np.save('test_stack02.npy', enc_test2)
+    np.save('./save_data/train_stack02.npy', enc_train2)
+    np.save('./save_data/test_stack02.npy', enc_test2)
 
     del x_train2, x_test2, enc_train2, enc_test2
 

@@ -47,6 +47,7 @@ class DeepAutoEncoder(object):
     def compile(self, optimizer='adam', loss='binary_crossentropy'):
         adam = Adam(lr=0.001, decay=0.005)
         self.autoencoder.compile(optimizer=adam, loss=loss)
+        print(self.autoencoder.summary())
 
     def train(self, x_train=None, x_test=None, nb_epoch=1, batch_size=128, shuffle=True):
         self.autoencoder.fit(x_train, x_train,
@@ -121,6 +122,7 @@ class AutoEncoderStack02(object):
     def compile(self, optimizer='adam', loss='mean_squared_error'):
         adam = Adam(lr=0.0005, decay=0.005)
         self.autoencoder.compile(optimizer=adam, loss=loss)
+        print(self.autoencoder.summary())
 
     def train(self, x_train=None, x_test=None, nb_epoch=1, batch_size=128, shuffle=True):
         self.autoencoder.fit(x_train, x_train,
@@ -152,6 +154,7 @@ class AutoEncoderStack03(object):
     def compile(self, optimizer='adam', loss='mean_squared_error'):
         adam = Adam(lr=0.0005, decay=0.005)
         self.autoencoder.compile(optimizer=adam, loss=loss)
+        print(self.autoencoder.summary())
 
     def train(self, x_train=None, x_test=None, nb_epoch=1, batch_size=128, shuffle=True):
         self.autoencoder.fit(x_train, x_train,
@@ -179,7 +182,7 @@ class AutoEncoderStack04(object):
 
         self.encoder = Model(input=input_img, output=encoded)
         self.autoencoder = Model(input=input_img, output=decoded)
-
+        print(self.autoencoder.summary())
     def compile(self, optimizer='adam', loss='mean_squared_error'):
         adam = Adam(lr=0.0005, decay=0.005)
         self.autoencoder.compile(optimizer=adam, loss=loss)
