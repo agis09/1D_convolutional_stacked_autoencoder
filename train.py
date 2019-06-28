@@ -82,7 +82,7 @@ def main():
     # step5
     print("***** STEP 5 *****")
     stacked_ae = DeepAutoEncoder(x_train1)
-    # stacked_ae.load_weights(ae01=ae01.autoencoder, ae02=ae02.autoencoder, ae03=ae03.autoencoder, ae04=ae04.autoencoder)
+    stacked_ae.load_weights(ae01=ae01.autoencoder, ae02=ae02.autoencoder, ae03=ae03.autoencoder, ae04=ae04.autoencoder)
     stacked_ae.compile()
     stacked_ae.train(x_train=x_train1, x_test=x_test1,
                      nb_epoch=100, batch_size=128)
